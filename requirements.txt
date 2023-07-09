@@ -3,6 +3,7 @@ flask-restful
 flask_cors
 pdf2image
 torch
+protobuf==3.20.3
 torchvision
 opencv-python
 scikit-image
@@ -10,7 +11,7 @@ scipy
 gitpython
 matplotlib
 numpy
-Pillow
+pillow==9.0.1
 psutil  # system resources
 PyYAML
 requests

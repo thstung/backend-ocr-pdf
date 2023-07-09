@@ -110,8 +110,7 @@ def seperate_image(image, write_on_terminal=True):
             y1 = int(table["bbox"][3])
             table_images.append({'table_coordinate': [x0, y0, x1-x0, y1-y0], 'image': image_to_crop[y0:y1, x0:x1]})
             image_text = cv2.rectangle(image_text, (x0, y0), (x1, y1), (255, 255, 255), -1)
-    image_text_clear = remove_stamp_and_signature(image_text)
-    text_metadata = text_region_detection(image_text_clear)
+    text_metadata = text_region_detection(image_text)
     return {'image': image,'texts': text_metadata, 'tables': table_images}
 
 def ocr_text(image, text_metadata):
@@ -148,9 +147,9 @@ def get_cells(object_table, table_coordinates):
                                         row['bbox'][1] + table_coordinates[1],
                                         row['bbox'][2] - row['bbox'][0],
                                         row['bbox'][3] - row['bbox'][1]]})
-    for row in enumerate(table_rows):
+    for row in table_rows:
         cells_row = []
-        for column_num, column in enumerate(table_columns):
+        for column in table_columns:
             cells_row.append([column['bbox'][0], row['bbox'][1], column['bbox'][2], row['bbox'][3]])
         cells.append(cells_row)
     return cells, columns, rows
