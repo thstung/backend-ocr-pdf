@@ -23,7 +23,7 @@ def convert_image_to_base64(pil_img):
 # Convert pdf to list of images and preprocess
 def convert_pdf2images(pdf):
     print('CONVERT_PDF2IMAGES')
-    images = convert_from_bytes(pdf)
+    images = convert_from_bytes(pdf, poppler_path="../poppler-0.68.0/bin")
     base64_images = []
     print('PREPROCESS IMAGES')
     for image in tqdm(images):
@@ -70,6 +70,15 @@ def remove_stamp_and_signature(img_array, write_on_terminal=True):
 
     return img_remove
 
+def sort_bbox_text_region(metadata):
+    if len(metadata) != 0:
+        # Sắp xếp metadata theo y và x
+        sorted_metadata = sorted(metadata, key=lambda item: (item['text-region'][1], item['text-region'][0]), reverse=True)
+
+        return sorted_metadata
+    else:
+        return metadata
+
 # Get text region bounding box
 def text_region_detection(img_array, blur_kernel = (7,7), dilate_kernel = (5,4)):
     img_remove_noise = remove_stamp_and_signature(img_array)
@@ -91,7 +100,8 @@ def text_region_detection(img_array, blur_kernel = (7,7), dilate_kernel = (5,4))
           continue
         # cv2.rectangle(img_array, (x, y), (x + w, y + h), (0, 255, 0), 2)
         metadata.append({'text-region': (x, y, w, h)})
-    return metadata
+    sort_metadata = sort_bbox_text_region(metadata)
+    return sort_metadata
 
 # Seperate image into two part: Text image and Table images
 def seperate_image(image, write_on_terminal=True):
@@ -168,7 +178,7 @@ def generate_table(image_table, cells, columns, rows):
         for cell in cells_row:
             img_cell = image_table.crop(cell)
             text_of_cell = ocr_image(img_cell)
-            text_of_cell = ' '.join(text_of_cell)
+            # text_of_cell = ' '.join(text_of_cell)
             list_text_row.append(text_of_cell)
 
         table_data["rows"].append(list_text_row)

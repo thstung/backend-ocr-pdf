@@ -7,9 +7,25 @@ import pandas as pd
 import time
 from src.init_models import viet_ocr, paddle_ocr
 
+# def sort_lines(list_line):
+
+#     if len(list_line) == 0:
+#         return list_line
+#     elif len(list_line[0]) == 0:
+#         return list_line
+#     # Sắp xếp mỗi bbox trong mỗi line theo y0, x0
+#     for line in list_line:
+#         line.sort(key=lambda bbox: (bbox[0][1], bbox[0][0]), reverse=True)
+
+#     # Sắp xếp các line trong s theo y0 min trong line đó
+#     list_line.sort(key=lambda line: line[0][0][1], reverse=False)
+
+#     return list_line
+
 def ocr_image(image):
     image_array = np.array(image)
     result = paddle_ocr.ocr(image_array, rec=False)
+    # result = sort_lines(list_lines)
     list_text = []
     for line in result:
         for bbox in line:

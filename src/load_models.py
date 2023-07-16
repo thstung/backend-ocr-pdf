@@ -9,14 +9,16 @@ from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 sys.path.append("../detr")
 from models import build_model
-from src.settings import TSR_MODEL, TSR_MODEL_CONFIG, TD_MODEL, TD_MODEL_CONFIG
+from src.settings import TSR_MODEL, TSR_MODEL_CONFIG, TD_MODEL, TD_MODEL_CONFIG, VIETOCR_MODEL
 
 
 def VietOCR_model():
     # Load vietOCR model
     config = Cfg.load_config_from_name('vgg_transformer')
+    # config['weights'] = VIETOCR_MODEL
     config['cnn']['pretrained']=False
     config['device'] = 'cpu'
+    # config['predictor']['beamsearch']=False
 
     viet_ocr = Predictor(config)
     return viet_ocr
