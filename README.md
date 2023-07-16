@@ -11,7 +11,7 @@ virtualenv -p python .venv
 * windows
 .venv\Scripts\Activate.ps1    
 * linux
-.venv/bin/activate
+source .venv/bin/activate
 
 pip install -r requirements.txt
 
