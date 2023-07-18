@@ -15,10 +15,10 @@ from src.settings import TSR_MODEL, TSR_MODEL_CONFIG, TD_MODEL, TD_MODEL_CONFIG,
 def VietOCR_model():
     # Load vietOCR model
     config = Cfg.load_config_from_name('vgg_transformer')
-    # config['weights'] = VIETOCR_MODEL
+    config['weights'] = VIETOCR_MODEL
     config['cnn']['pretrained']=False
     config['device'] = 'cpu'
-    # config['predictor']['beamsearch']=False
+    config['predictor']['beamsearch']=False
 
     viet_ocr = Predictor(config)
     return viet_ocr

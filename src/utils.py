@@ -1,7 +1,7 @@
 from pdf2image import convert_from_bytes
 import io
 from base64 import b64encode
-
+from src.init_models import paddle_ocr, viet_ocr
 import cv2
 import numpy as np
 from PIL import Image, ImageEnhance
@@ -103,6 +103,21 @@ def text_region_detection(img_array, blur_kernel = (7,7), dilate_kernel = (5,4))
     sort_metadata = sort_bbox_text_region(metadata)
     return sort_metadata
 
+def paddle_text_region_detection(img_array):
+    result = paddle_ocr.ocr(img_array, rec=False)
+    metadata = []
+    for line in result:
+        for bbox in line:
+            left = bbox[0][0]
+            top = bbox[0][1]
+            right = bbox[2][0]
+            bot = bbox[2][1]
+            if (right - left) <= (bot - top):
+                continue
+            metadata.append({'text-region': (int(left), int(top), int(right - left), int(bot - top))})
+    sort_metadata = sort_bbox_text_region(metadata)
+    return sort_metadata
+
 # Seperate image into two part: Text image and Table images
 def seperate_image(image, write_on_terminal=True):
     if write_on_terminal:
@@ -120,7 +135,8 @@ def seperate_image(image, write_on_terminal=True):
             y1 = int(table["bbox"][3])
             table_images.append({'table_coordinate': [x0, y0, x1-x0, y1-y0], 'image': image_to_crop[y0:y1, x0:x1]})
             image_text = cv2.rectangle(image_text, (x0, y0), (x1, y1), (255, 255, 255), -1)
-    text_metadata = text_region_detection(image_text)
+    # text_metadata = text_region_detection(image_text)
+    text_metadata = paddle_text_region_detection(image_text)
     return {'image': image,'texts': text_metadata, 'tables': table_images}
 
 def ocr_text(image, text_metadata):
@@ -133,7 +149,8 @@ def ocr_text(image, text_metadata):
         h_text = metadata['text-region'][3]
         text_region = image[y_text:y_text+h_text, x_text:x_text+w_text]
         text_region_pil = Image.fromarray(text_region)
-        text_of_metadata = ocr_image(text_region_pil)
+        # text_of_metadata = ocr_image(text_region_pil)
+        text_of_metadata = viet_ocr.predict(text_region_pil)
         new_text_metadata.append({'text-region': metadata['text-region'], 'text': text_of_metadata})
 
     return new_text_metadata
